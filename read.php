@@ -83,7 +83,7 @@ require_once "config.php";
             <div class="page-header">
               <h1 id="tables">Contacts</h1>
             </div>
-
+            <a href="create.php" class="btn btn-info">Create Contact</a>
             <div class="bs-component">
               <table class="table table-hover">
                 <thead>
