@@ -35,11 +35,22 @@ if (isset($_GET['id'])) {
         */
 
         // Prepare the update statement
-        $sql = "UPDATE contacts SET id = ?, name = ?, email = ?, phone = ?, title = ?, created = ? WHERE id = ?";
+        $sql = "UPDATE contacts SET name = ?, email = ?, phone = ?, title = ? WHERE id = ?";
 
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, 'dssss', $id, $contact_name, $email, $phone, $title);
+            mysqli_stmt_bind_param($stmt, 'ssssd', $contact_name, $email, $phone, $title, $_GET['id']);
+
+            /*            
+            //echo "Contact Id:".$_GET['id'];
+            echo " - Contact name:".$contact_name;
+            echo " - email:".$email;
+            echo " - phone:".$phone;
+            echo " - title:".$title;
+            echo " - created:".$created;
+            */
+
+
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 $msg = '<div class="card text-white bg-success mb-3" style="max-width: 20rem;">';
@@ -68,11 +79,28 @@ if (isset($_GET['id'])) {
     $contact = $stmt->fetch(PDO::FETCH_ASSOC);
     */
     // Prepare the select statement
-    $sql = "UPDATE contacts SET id = ?, name = ?, email = ?, phone = ?, title = ?, created = ? WHERE id = ?";
+    $sql = "SELECT * FROM contacts WHERE id = ?";
+    if($stmt = mysqli_prepare($link, $sql)){
+        // Bind variables to the prepared statement as parameters
+        mysqli_stmt_bind_param($stmt, 'd', $_GET['id']);
+        //echo "Contact Id:".$_GET['id'];
+        if(mysqli_stmt_execute($stmt)){
+            /* bind result variables */
+            mysqli_stmt_bind_result($stmt, $id, $contact_name, $email, $phone, $title, $created);
+            mysqli_stmt_fetch($stmt);
+            /*
+            echo " - Contact name:".$contact_name;
+            echo " - email:".$email;
+            echo " - phone:".$phone;
+            echo " - title:".$title;
+            echo " - created:".$created;
+            */
+        }
 
-    if (!$contact) {
-        exit('Contact doesn\'t exist with that ID!');
     }
+
+
+
     
 } else {
     exit('No ID specified!');
@@ -135,34 +163,34 @@ if (isset($_GET['id'])) {
     <div class="row">
         <div class="col-lg-6">
             <div class="bs-component">
-                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'];?>">
-                    <legend>Update contact #<?=$contact['id']?></legend>
+                <form method="POST" action="update.php?id=<?=$id?>">
+                    <legend>Update contact #<?=$id?></legend>
                     <div>
                         <fieldset disabled>
                         <label class="form-label" for="disabledInput">Id</label>
-                        <input class="form-control" id="id" type="text" placeholder="(AUTO)" value="<?=$contact['id']?>" disabled>
+                        <input class="form-control" id="id" type="text" placeholder="(AUTO)" value="<?=$id?>" name="id" disabled>
                         </fieldset>
                     </div>
                     <div>
                         <label for="contact_name" class="form-label mt-4">Name</label>
-                        <input type="text" class="form-control" id="contact_name" name="contact_name" aria-describedby="name" placeholder="John Doe" value="<?=$contact['name']?>">
+                        <input type="text" class="form-control" id="contact_name" name="contact_name" aria-describedby="name" placeholder="John Doe" value="<?=$contact_name?>">
                     </div>
                     <div>
                         <label for="email" class="form-label mt-4">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" aria-describedby="email" placeholder="johndoe@example.com" value="<?=$contact['email']?>">
+                        <input type="email" class="form-control" id="email" name="email" aria-describedby="email" placeholder="johndoe@example.com" value="<?=$email?>">
                     </div>
                     <div>
                         <label for="phone" class="form-label mt-4">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" aria-describedby="phone" placeholder="2025550143" value="<?=$contact['phone']?>">
+                        <input type="text" class="form-control" id="phone" name="phone" aria-describedby="phone" placeholder="2025550143" value="<?=$phone?>">
                     </div>
                     <div>
                         <label for="title" class="form-label mt-4">Title</label>
-                        <input type="text" class="form-control" id="title" name="title" aria-describedby="title" placeholder="Employee" value="<?=$contact['title']?>">
+                        <input type="text" class="form-control" id="title" name="title" aria-describedby="title" placeholder="Employee" value="<?=$title?>">
                     </div>
                     <div>
                         <fieldset disabled>
                         <label class="form-label" for="disabledInput">Created</label>
-                        <input class="form-control" id="created" name="created" type="text" value="<?=date('Y-m-d\TH:i')?>" value="<?=date('Y-m-d\TH:i', strtotime($contact['created']))?>" disabled>
+                        <input class="form-control" id="created" name="created" type="text" value="<?=date('Y-m-d\TH:i', strtotime($created))?>" disabled>
                         </fieldset>
                     </div>
                     <div></div>
